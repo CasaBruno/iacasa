@@ -23,10 +23,8 @@ jobs:
 
     - name: Instalar dependencias
       run: |
-        python -m venv venv  # Crear un entorno virtual
-        source venv/bin/activate  # Activar el entorno
-        pip install --upgrade pip
-        pip install -r requirements.txt  # Instalar las dependencias de Flask
+        pip install --upgrade pip --break-system-packages 
+        pip install -r requirements.txt  --break-system-packages # Instalar las dependencias de Flask
 
     - name: Configurar variables de entorno
       run: |
@@ -41,7 +39,6 @@ jobs:
         [Service]
         User=brunolb  # Ajustar el usuario según sea necesario
         WorkingDirectory=$(pwd)/iacasa  # Usar el directorio donde se clonó el repositorio
-        Environment="PATH=$(pwd)/iacasa/venv/bin:$PATH"
         ExecStart=$(pwd)/iacasa/venv/bin/python $(pwd)/iacasa/app.py  # Ruta al archivo de la app
         Restart=always
         Environment=FLASK_ENV=production
