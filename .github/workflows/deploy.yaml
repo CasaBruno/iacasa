@@ -41,7 +41,7 @@ jobs:
         [Service]
         User=brunolb  # Ajustar el usuario según sea necesario
         WorkingDirectory=$(pwd)/iacasa  # Usar el directorio donde se clonó el repositorio
-        ExecStart=$(pwd)/iacasa/venv/bin/python $(pwd)/iacasa/app.py  # Ruta al archivo de la app
+        ExecStart=/usr/bin/python3 $(pwd)/iacasa/app.py  # Ruta al archivo de la app
         Restart=always
         Environment=FLASK_ENV=production
 
