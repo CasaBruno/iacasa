@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: Checkout código
       uses: actions/checkout@v2
+      with:
+        path: /opt/my_flask_api  # Clonar el repositorio en /opt/my_flask_api
 
     - name: Configurar Python
       uses: actions/setup-python@v2
@@ -25,6 +27,7 @@ jobs:
 
     - name: Instalar dependencias
       run: |
+        cd /opt/my_flask_api  # Navegar al directorio donde se clonó el repositorio
         python -m venv venv  # Crear un entorno virtual
         source venv/bin/activate  # Activar el entorno
         pip install --upgrade pip
@@ -34,12 +37,27 @@ jobs:
       run: |
         echo "FLASK_ENV=production" >> $GITHUB_ENV  # Establecer el entorno de Flask, si es necesario
 
-    - name: Ejecutar la API de Flask
+    - name: Crear archivo de servicio systemd para Flask
       run: |
-        source venv/bin/activate  # Activar el entorno virtual
-        export FLASK_APP=app.py  # Ajusta esto si tu archivo principal no se llama 'app.py'
-        flask run --host=0.0.0.0 --port=5000 &  # Levanta la API Flask en segundo plano
-        sleep 5  # Espera un poco para que Flask arranque
+        echo "[Unit]
+        Description=Flask API
+        After=network.target
+        
+        [Service]
+        User=ubuntu  # Ajustar el usuario según sea necesario
+        WorkingDirectory=/opt/my_flask_api
+        ExecStart=/opt/my_flask_api/venv/bin/python /opt/my_flask_api/app.py
+        Restart=always
+        Environment=FLASK_ENV=production
+
+        [Install]
+        WantedBy=multi-user.target" | sudo tee /etc/systemd/system/flask-api.service > /dev/null
+
+    - name: Iniciar el servicio Flask
+      run: |
+        sudo systemctl daemon-reload  # Recargar los servicios de systemd
+        sudo systemctl enable flask-api.service  # Habilitar el servicio para que se inicie al arrancar
+        sudo systemctl start flask-api.service  # Iniciar el servicio de Flask
 
     - name: Verificar que la API está corriendo
       run: |
