@@ -1,0 +1,73 @@
+name: Deploy API Flask
+
+on:
+  push:
+    branches:
+      - main
+    types: 
+      - merged  # Se activa solo cuando se hace un merge en la rama main
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Usar un runner self-hosted
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v2
+
+    - name: Configurar Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Ajustar a la versión de Python que necesitas
+
+    - name: Instalar dependencias
+      run: |
+        python -m venv venv  # Crear un entorno virtual
+        source venv/bin/activate  # Activar el entorno
+        pip install --upgrade pip
+        pip install -r requirements.txt  # Instalar las dependencias de Flask
+
+    - name: Configurar variables de entorno
+      run: |
+        echo "FLASK_ENV=production" >> $GITHUB_ENV  # Establecer el entorno de Flask, si es necesario
+
+    - name: Ejecutar la API de Flask
+      run: |
+        source venv/bin/activate  # Activar el entorno virtual
+        export FLASK_APP=app.py  # Ajusta esto si tu archivo principal no se llama 'app.py'
+        flask run --host=0.0.0.0 --port=5000 &  # Levanta la API Flask en segundo plano
+        sleep 5  # Espera un poco para que Flask arranque
+
+    - name: Verificar que la API está corriendo
+      run: |
+        if curl --silent --fail http://localhost:5000; then
+          echo "API levantada correctamente"
+          echo "Flask API está en funcionamiento." > result.log  # Log del resultado
+          exit 0
+        else
+          echo "Error al levantar la API Flask"
+          echo "Error: No se pudo levantar la API." > result.log  # Log del error
+          exit 1
+        fi
+
+    - name: Crear comentario en la PR
+      if: success()  # Si la API se levantó correctamente
+      run: |
+        PR_NUMBER=$(curl -s https://api.github.com/repos/${{ github.repository }}/pulls | jq -r '.[0].number')  # Obtén el número de la PR
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"body": "¡La API de Flask se ha levantado correctamente en el entorno de producción!"}' \
+          https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
+
+    - name: Crear comentario de error en la PR y reabrirla
+      if: failure()  # Si la API no se levanta correctamente
+      run: |
+        PR_NUMBER=$(curl -s https://api.github.com/repos/${{ github.repository }}/pulls | jq -r '.[0].number')  # Obtén el número de la PR
+        curl -X POST \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"body": "¡Error! No se pudo levantar la API de Flask. Se reabrirá la PR para que sea revisada."}' \
+          https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
+        curl -X PATCH \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d '{"state": "open"}' \
+          https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}  # Reabrir la PR
