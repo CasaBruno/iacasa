@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    types: 
-      - merged  # Se activa solo cuando se hace un merge en la rama main
 
 jobs:
   deploy:
