@@ -23,7 +23,6 @@ jobs:
 
     - name: Instalar dependencias
       run: |
-        cd /opt/my_flask_api  # Navegar al directorio donde se clonó el repositorio
         python -m venv venv  # Crear un entorno virtual
         source venv/bin/activate  # Activar el entorno
         pip install --upgrade pip
