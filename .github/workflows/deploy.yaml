@@ -10,6 +10,9 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted  # Usar un runner self-hosted
+    permissions:
+      contents: read  # Permite leer los contenidos del repositorio
+      pull-requests: write  # Permite interactuar con los pull requests
 
     steps:
     - name: Checkout código
