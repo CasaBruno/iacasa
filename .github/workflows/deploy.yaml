@@ -23,7 +23,7 @@ jobs:
 
     - name: Instalar dependencias
       run: |
-        #Crear un entorno virtual
+        id 
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip  
