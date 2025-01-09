@@ -44,6 +44,7 @@ jobs:
         WorkingDirectory=$(pwd)/iacasa 
         Environment="PATH=$(pwd)/venv/bin"
         ExecStart=source $(pwd)/venv/bin && $(pwd)/venv/bin/python $(pwd)/iacasa/app.py  # Ruta al archivo de la app
+
         Restart=always
         Environment=FLASK_ENV=production
 
