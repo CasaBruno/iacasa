@@ -32,7 +32,7 @@ jobs:
     - name: Configurar variables de entorno
       run: |
         echo "FLASK_ENV=production" >> $GITHUB_ENV  # Establecer el entorno de Flask, si es necesario
-    -name: Matamos el proceso de la API si ya está corriendo
+    - name: Matamos el proceso de la API si ya está corriendo
       run: |
         kill $(ps aux | grep 'app.py' | awk '{print $2}')  # Matar el proceso de la API si ya está corriend
     - name: Correr la api en segundo plano
