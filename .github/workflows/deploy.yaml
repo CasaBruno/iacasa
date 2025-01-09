@@ -32,29 +32,13 @@ jobs:
     - name: Configurar variables de entorno
       run: |
         echo "FLASK_ENV=production" >> $GITHUB_ENV  # Establecer el entorno de Flask, si es necesario
-
-    - name: Crear archivo de servicio systemd para Flask
+    -name: Matamos el proceso de la API si ya está corriendo
       run: |
-        echo "[Unit]
-        Description=Flask API
-        After=network.target
-        
-        [Service]
-        User=root  # Ajustar el usuario según sea necesario
-        WorkingDirectory=$(pwd)/iacasa 
-        Environment="PATH=$(pwd)/venv/bin"
-        ExecStart=source $(pwd)/venv/bin/activate && $(pwd)/venv/bin/python $(pwd)/iacasa/app.py  # Ruta al archivo de la app
-        Restart=always
-        Environment=FLASK_ENV=production
-
-        [Install]
-        WantedBy=multi-user.target" | sudo tee /etc/systemd/system/flask-api.service > /dev/null
-
-    - name: Iniciar el servicio Flask
+        kill $(ps aux | grep 'app.py' | awk '{print $2}')  # Matar el proceso de la API si ya está corriend
+    - name: Correr la api en segundo plano
       run: |
-        sudo systemctl daemon-reload  # Recargar los servicios de systemd
-        sudo systemctl enable flask-api.service  # Habilitar el servicio para que se inicie al arrancar
-        sudo systemctl start flask-api.service  # Iniciar el servicio de Flask
+        nohup $(pwd)/venv/bin/python app.py &  # Correr la API en segundo plano
+        sleep 5  # Esperar a que la API se levante
 
     - name: Verificar que la API está corriendo
       run: |
