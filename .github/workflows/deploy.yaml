@@ -37,9 +37,17 @@ jobs:
         kill $(ps aux | grep 'app.py' | awk '{print $2}') || true # Matar el proceso de la API si ya está corriendo
         
 
-    - name: Correr la api en segundo plano
+    - name: Copiar y gestionar permisos del script de ejecución
       run: |
-        nohup $(pwd)/venv/bin/python app.py &  # Correr la API en segundo plano
+        sudo rm /opt/run.sh
+        cp run.sh /opt/run.sh
+        sudo chmod 777 /opt/run.sh
+        sleep 5  # Esperar a que la API se levante
+
+    - name: Levantar la API
+      run: |
+        sudo systemctl stop flask-api  # Detener el servicio de la API
+        sudo systemctl start flask-api  # Iniciar el servicio de la API
         sleep 5  # Esperar a que la API se levante
 
     - name: Verificar que la API está corriendo

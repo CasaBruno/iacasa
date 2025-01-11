@@ -1,0 +1,1 @@
+source /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/activate && /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/python /home/brunolb/actions-runner/_work/iacasa/iacasa/app.py
