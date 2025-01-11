@@ -18,7 +18,7 @@ jobs:
         sudo systemctl stop flask-api || true  # Detener el servicio de la API si ya está corriendo
     - name: Remove __pycache__ directory
       run: |
-        sudo rm -rf /home/brunolb/actions-runner/_work/iacasa/iacasa/__pycache__ || true
+        sudo rm -rf /home/brunolb/actions-runner/_work/iacasa/ || true
     - name: Checkout código
       uses: actions/checkout@v2
 
