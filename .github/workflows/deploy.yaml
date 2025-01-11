@@ -48,7 +48,7 @@ jobs:
         sudo rm /opt/run.sh || true  # Eliminar el script de ejecución si ya existe
         sudo cp run.sh /opt/run.sh
         sudo chmod 777 /opt/run.sh
-        sleep 5  # Esperar a que la API se levante
+        sleep 25  # Esperar a que la API se levante
 
     - name: Levantar la API
       run: |
