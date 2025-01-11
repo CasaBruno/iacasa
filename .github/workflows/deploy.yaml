@@ -52,7 +52,7 @@ jobs:
 
     - name: Verificar que la API está corriendo
       run: |
-        if curl --silent --fail http://localhost:5000; then
+        if curl --silent --fail http://localhost:8000; then
           echo "API levantada correctamente"
           echo "Flask API está en funcionamiento." > result.log  # Log del resultado
           exit 0
@@ -71,15 +71,15 @@ jobs:
           -d '{"body": "¡La API de Flask se ha levantado correctamente en el entorno de producción!"}' \
           https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
 
-    - name: Crear comentario de error en la PR y abrir una ISSUE con una PR relacionada
+    - name: Crear comentario de error en la PR y abrir una ISSUE
       if: failure()  # Si la API no se levanta correctamente
       run: |
         PR_NUMBER=$(curl -s https://api.github.com/repos/${{ github.repository }}/pulls?state=all  | jq -r '.[0].number')  # Obtén el número de la PR
         curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"body": "Error al levantar la API de Flask en el entorno de producción. Por favor, revisa el log de errores."}' \
+          -d '{"body": "Error al levantar la API de Flask en el entorno de producción. Se ha abierto un ISSUE para solucionar el problema."}' \
           https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
         curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"title": "Error al levantar la API de Flask en producción", "body": "Error al levantar la API de Flask en producción. Por favor, revisa el log de errores.", "head": "main", "base": "main"}' \
-          https://api.github.com/repos/${{ github.repository }}/pulls
+          -d '{"title": "Error al levantar la API de Flask en producción", "body": "La API de Flask no se ha levantado correctamente en el entorno de producción. Por favor, revisa el error y soluciona el problema.", "labels": ["bug"]}' \
+          https://api.github.com/repos/${{ github.repository }}/issues
