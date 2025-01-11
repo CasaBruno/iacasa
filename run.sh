@@ -1,1 +1,1 @@
-source /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/activate && /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/python /home/brunolb/actions-runner/_work/iacasa/iacasa/app.py
+source /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/activate && cd /home/brunolb/actions-runner/_work/iacasa/iacasa && gunicorn --config gunicorn_config.py app:app

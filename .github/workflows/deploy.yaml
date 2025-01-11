@@ -71,15 +71,15 @@ jobs:
           -d '{"body": "¡La API de Flask se ha levantado correctamente en el entorno de producción!"}' \
           https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
 
-    - name: Crear comentario de error en la PR y reabrirla
+    - name: Crear comentario de error en la PR y abrir una ISSUE con una PR relacionada
       if: failure()  # Si la API no se levanta correctamente
       run: |
-        PR_NUMBER=$(curl -s https://api.github.com/repos/${{ github.repository }}/pulls?state=all | jq -r '.[0].number')  # Obtén el número de la PR
+        PR_NUMBER=$(curl -s https://api.github.com/repos/${{ github.repository }}/pulls?state=all  | jq -r '.[0].number')  # Obtén el número de la PR
         curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"body": "¡Error! No se pudo levantar la API de Flask. Se reabrirá la PR para que sea revisada."}' \
+          -d '{"body": "Error al levantar la API de Flask en el entorno de producción. Por favor, revisa el log de errores."}' \
           https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments
-        curl -X PATCH \
+        curl -X POST \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"state": "open"}' \
-          https://api.github.com/repos/${{ github.repository }}/pulls/${PR_NUMBER}  # Reabrir la PR
+          -d '{"title": "Error al levantar la API de Flask en producción", "body": "Error al levantar la API de Flask en producción. Por favor, revisa el log de errores.", "head": "main", "base": "main"}' \
+          https://api.github.com/repos/${{ github.repository }}/pulls
