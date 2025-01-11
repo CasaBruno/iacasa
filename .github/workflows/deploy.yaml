@@ -58,7 +58,7 @@ jobs:
 
     - name: Verificar que la API está corriendo
       run: |
-        if curl --silent --fail http://localhost:8000; then
+        if curl --silent --fail http://localhost:8080; then
           echo "API levantada correctamente"
           echo "Flask API está en funcionamiento." > result.log  # Log del resultado
           exit 0
