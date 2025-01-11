@@ -13,6 +13,9 @@ jobs:
       pull-requests: write  # Permite interactuar con los pull requests
 
     steps:
+    - name: Remove __pycache__ directory
+        run: |
+          sudo rm -rf /home/brunolb/actions-runner/_work/iacasa/iacasa/__pycache__ || true
     - name: Checkout código
       uses: actions/checkout@v2
 
