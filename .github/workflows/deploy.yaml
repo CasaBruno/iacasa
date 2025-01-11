@@ -40,7 +40,7 @@ jobs:
     - name: Copiar y gestionar permisos del script de ejecución
       run: |
         sudo rm /opt/run.sh || true  # Eliminar el script de ejecución si ya existe
-        cp run.sh /opt/run.sh
+        sudo cp run.sh /opt/run.sh
         sudo chmod 777 /opt/run.sh
         sleep 5  # Esperar a que la API se levante
 
