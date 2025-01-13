@@ -1,1 +1,1 @@
-source /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/activate && cd /home/brunolb/actions-runner/_work/iacasa/iacasa && gunicorn --config gunicorn_config.py app:app
+source /home/brunolb/actions-runner/_work/iacasa/iacasa/venv/bin/activate && cd /home/brunolb/actions-runner/_work/iacasa/iacasa && uvicorn app:app --host 0.0.0.0 --port 8000 --workers 4
