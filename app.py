@@ -1,14 +1,15 @@
 # app.py
-from flask import Flask
 
 from proxmox.proxmox_status import get_proxmox_status
 
-app = Flask(__name__)
+from fastapi import FastAPI
 
-@app.route('/')
+app = FastAPI()
+
+@app.get('/')
 def index():
     return 'API LEVANTADA'
 
-@app.route('/proxmox_status')
+@app.get('/proxmox_status')
 def proxmox_status():
     return get_proxmox_status()
